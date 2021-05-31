@@ -1,0 +1,184 @@
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+
+CREATE TABLE IF NOT EXISTS `apitest`.`agp_projet` (
+  `agp_projet_id` INT(11) NOT NULL AUTO_INCREMENT,
+  `agp_projet_nom` VARCHAR(45) NULL DEFAULT NULL,
+  `agp_projet_description` VARCHAR(254) NULL DEFAULT NULL,
+  `agp_projet_date_creation` DATETIME NULL DEFAULT NULL,
+  `agp_projet_date_debut` DATETIME NULL DEFAULT NULL,
+  `agp_projet_date_fin` DATETIME NULL DEFAULT NULL,
+  `agp_projet_etat` INT(11) NULL DEFAULT NULL,
+  PRIMARY KEY (`agp_projet_id`),
+  INDEX `fk_agp_projet_agp_etat1_idx` (`agp_projet_etat` ASC) ,
+  CONSTRAINT `fk_agp_projet_agp_etat1`
+    FOREIGN KEY (`agp_projet_etat`)
+    REFERENCES `apitest`.`agp_etat` (`agp_etat_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE IF NOT EXISTS `apitest`.`agp_taches` (
+  `agp_taches_id` INT(11) NOT NULL AUTO_INCREMENT,
+  `agp_taches_nom` VARCHAR(45) NULL DEFAULT NULL,
+  `agp_taches_description` VARCHAR(45) NULL DEFAULT NULL,
+  `agp_taches_date_creation` DATETIME NULL DEFAULT NULL,
+  `agp_taches_date_debut` DATETIME NULL DEFAULT NULL,
+  `agp_taches_date_fin` DATETIME NULL DEFAULT NULL,
+  `agp_taches_etat` INT(11) NULL DEFAULT NULL,
+  `agp_taches_createur` INT(11) NOT NULL,
+  `agp_taches_periodicite` INT(11) NULL DEFAULT NULL,
+  PRIMARY KEY (`agp_taches_id`),
+  INDEX `fk_agp_taches_agp_utilisateur1_idx` (`agp_taches_createur` ASC) ,
+  INDEX `fk_agp_taches_agp_etat1_idx` (`agp_taches_etat` ASC) ,
+  INDEX `fk_agp_taches_agp_periodicite1_idx` (`agp_taches_periodicite` ASC) ,
+  CONSTRAINT `fk_agp_taches_agp_utilisateur1`
+    FOREIGN KEY (`agp_taches_createur`)
+    REFERENCES `apitest`.`agp_utilisateur` (`agp_utilisateur_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_agp_taches_agp_etat1`
+    FOREIGN KEY (`agp_taches_etat`)
+    REFERENCES `apitest`.`agp_etat` (`agp_etat_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_agp_taches_agp_periodicite1`
+    FOREIGN KEY (`agp_taches_periodicite`)
+    REFERENCES `apitest`.`agp_periodicite` (`agp_periodicite_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE IF NOT EXISTS `apitest`.`agp_sous_taches` (
+  `agp_sous_taches_id` INT(11) NOT NULL AUTO_INCREMENT,
+  `agp_sous_taches_nom` VARCHAR(45) NULL DEFAULT NULL,
+  `agp_sous_taches_description` VARCHAR(45) NULL DEFAULT NULL,
+  `agp_sous_taches_date_creation` DATETIME NULL DEFAULT NULL,
+  `agp_sous_taches_date_debut` DATETIME NULL DEFAULT NULL,
+  `agp_sous_taches_date_fin` DATETIME NULL DEFAULT NULL,
+  `agp_sous_taches_etat` INT(11) NULL DEFAULT NULL,
+  `agp_sous_taches_parent` INT(11) NULL DEFAULT NULL,
+  `agp_sous_taches_createur` INT(11) NULL DEFAULT NULL,
+  `agp_sous_taches_periodicite` INT(11) NULL DEFAULT NULL,
+  PRIMARY KEY (`agp_sous_taches_id`),
+  INDEX `fk_agp_sous_taches_agp_taches1_idx` (`agp_sous_taches_parent` ASC) ,
+  INDEX `fk_agp_sous_taches_agp_utilisateur1_idx` (`agp_sous_taches_createur` ASC) ,
+  INDEX `fk_agp_sous_taches_agp_etat1_idx` (`agp_sous_taches_etat` ASC) ,
+  INDEX `fk_agp_sous_taches_agp_periodicite1_idx` (`agp_sous_taches_periodicite` ASC) ,
+  CONSTRAINT `fk_agp_sous_taches_agp_taches1`
+    FOREIGN KEY (`agp_sous_taches_parent`)
+    REFERENCES `apitest`.`agp_taches` (`agp_taches_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_agp_sous_taches_agp_utilisateur1`
+    FOREIGN KEY (`agp_sous_taches_createur`)
+    REFERENCES `apitest`.`agp_utilisateur` (`agp_utilisateur_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_agp_sous_taches_agp_etat1`
+    FOREIGN KEY (`agp_sous_taches_etat`)
+    REFERENCES `apitest`.`agp_etat` (`agp_etat_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_agp_sous_taches_agp_periodicite1`
+    FOREIGN KEY (`agp_sous_taches_periodicite`)
+    REFERENCES `apitest`.`agp_periodicite` (`agp_periodicite_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE IF NOT EXISTS `apitest`.`agp_periodicite` (
+  `agp_periodicite_id` INT(11) NOT NULL AUTO_INCREMENT,
+  `agp_periodicite_type` INT(11) NULL DEFAULT NULL,
+  `agp_periodicite_nombre` INT(11) NULL DEFAULT NULL,
+  PRIMARY KEY (`agp_periodicite_id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE IF NOT EXISTS `apitest`.`agp_categories` (
+  `agp_categories` INT(11) NOT NULL AUTO_INCREMENT,
+  `agp_categories_nom` VARCHAR(45) NULL DEFAULT NULL,
+  `agp_categories_description` VARCHAR(200) NULL DEFAULT NULL,
+  PRIMARY KEY (`agp_categories`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE IF NOT EXISTS `apitest`.`agp_jointure` (
+  `agp_jointure_id` INT(11) NOT NULL AUTO_INCREMENT,
+  `agp_jointure_titre` VARCHAR(45) NULL DEFAULT NULL,
+  `agp_jointure_path` VARCHAR(200) NULL DEFAULT NULL,
+  `agp_jointure_type` INT(11) NULL DEFAULT NULL,
+  PRIMARY KEY (`agp_jointure_id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE IF NOT EXISTS `apitest`.`agp_projet_has_agp_taches` (
+  `agp_projet_agp_projet_id` INT(11) NOT NULL,
+  `agp_taches_agp_taches_id` INT(11) NOT NULL,
+  INDEX `fk_agp_projet_has_agp_taches_agp_taches1_idx` (`agp_taches_agp_taches_id` ASC) ,
+  INDEX `fk_agp_projet_has_agp_taches_agp_projet_idx` (`agp_projet_agp_projet_id` ASC) ,
+  CONSTRAINT `fk_agp_projet_has_agp_taches_agp_projet`
+    FOREIGN KEY (`agp_projet_agp_projet_id`)
+    REFERENCES `apitest`.`agp_projet` (`agp_projet_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_agp_projet_has_agp_taches_agp_taches1`
+    FOREIGN KEY (`agp_taches_agp_taches_id`)
+    REFERENCES `apitest`.`agp_taches` (`agp_taches_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE IF NOT EXISTS `apitest`.`agp_utilisateur_has_agp_projet` (
+  `agp_utilisateur_agp_utilisateur_id` INT(11) NOT NULL,
+  `agp_projet_agp_projet_id` INT(11) NOT NULL,
+  `agp_utilisateur_has_projet_creation` INT(11) NULL DEFAULT NULL,
+  INDEX `fk_agp_utilisateur_has_agp_projet_agp_projet1_idx` (`agp_projet_agp_projet_id` ASC) ,
+  INDEX `fk_agp_utilisateur_has_agp_projet_agp_utilisateur1_idx` (`agp_utilisateur_agp_utilisateur_id` ASC) ,
+  CONSTRAINT `fk_agp_utilisateur_has_agp_projet_agp_utilisateur1`
+    FOREIGN KEY (`agp_utilisateur_agp_utilisateur_id`)
+    REFERENCES `apitest`.`agp_utilisateur` (`agp_utilisateur_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_agp_utilisateur_has_agp_projet_agp_projet1`
+    FOREIGN KEY (`agp_projet_agp_projet_id`)
+    REFERENCES `apitest`.`agp_projet` (`agp_projet_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE IF NOT EXISTS `apitest`.`agp_categories_has_agp_projet` (
+  `agp_categories_agp_categories` INT(11) NOT NULL,
+  `agp_projet_agp_projet_id` INT(11) NOT NULL,
+  INDEX `fk_agp_categories_has_agp_projet_agp_projet1_idx` (`agp_projet_agp_projet_id` ASC) ,
+  INDEX `fk_agp_categories_has_agp_projet_agp_categories1_idx` (`agp_categories_agp_categories` ASC) ,
+  CONSTRAINT `fk_agp_categories_has_agp_projet_agp_categories1`
+    FOREIGN KEY (`agp_categories_agp_categories`)
+    REFERENCES `apitest`.`agp_categories` (`agp_categories`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_agp_categories_has_agp_projet_agp_projet1`
+    FOREIGN KEY (`agp_projet_agp_projet_id`)
+    REFERENCES `apitest`.`agp_projet` (`agp_projet_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE IF NOT EXISTS `apitest`.`agp_etat` (
+  `agp_etat_id` INT(11) NOT NULL AUTO_INCREMENT,
+  `agp_etat_libelle` VARCHAR(45) NULL DEFAULT NULL,
+  PRIMARY KEY (`agp_etat_id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
